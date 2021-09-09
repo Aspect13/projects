@@ -41,6 +41,10 @@ def whomai():
 
 def get_project_integrations():
     # Get user name from project_intergations_config
+    return [
+        {'name': "Jira", 'icon': 'icon'},
+        {'name': "SMTP", 'icon': 'icon'}
+    ]
     return ["rp", "ado", "email"]
 
 def get_user_projects():
@@ -192,6 +196,8 @@ class Project(AbstractBaseMixin, RpcMixin, Base):
             else:
                 projects = Project.query.limit(limit_).offset(offset_).all()
         return [project.to_json(exclude_fields=excluded_fields) for project in projects]
+
+
 
     # TODO: think on how to get that back
     # @classmethod
