@@ -44,7 +44,7 @@ class API(Resource):
         plugins = data["plugins"]
         storage_space_limit = data["storage_space_limit"]
         data_retention_limit = data["data_retention_limit"]
-        invitations = data['invitations']
+        invitations = data.get('invitations', [])
         project = Project(
             name=name_,
             plugins=plugins,
@@ -55,11 +55,12 @@ class API(Resource):
         project.insert()
         log.info('after project.insert()')
 
-        try:
-            self.module.context.rpc_manager.timeout(2).project_keycloak_group_handler(project).send_invitations(
-                invitations)
-        except Empty:
-            ...
+        if invitations:
+            try:
+                self.module.context.rpc_manager.timeout(2).project_keycloak_group_handler(project).send_invitations(
+                    invitations)
+            except Empty:
+                ...
 
         log.info('after invitations sent')
         # SessionProject.set(project.id)  # Looks weird, sorry :D
@@ -163,11 +164,11 @@ class API(Resource):
         if not project_id:
             return {"message": "Specify project id"}, 400
         project = Project.get_or_404(project_id)
-        if data["name"]:
+        if data.get("name"):
             project.name = data["name"]
-        if data["owner"]:
+        if data.get("owner"):
             project.project_owner = data["owner"]
-        if data["plugins"]:
+        if data.get("plugins"):
             project.plugins = data["plugins"]
         project.commit()
         return project.to_json(exclude_fields=Project.API_EXCLUDE_FIELDS), 200
