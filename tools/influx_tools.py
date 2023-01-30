@@ -25,7 +25,7 @@ def get_client(project_id, db_name=None):
     influx_password = secrets.get("influx_password") if "influx_password" in secrets else \
         hidden_secrets.get("influx_password", "")
 
-    return InfluxDBClient(influx_host, 8086, influx_user, influx_password, db_name)
+    return InfluxDBClient(influx_host, 8086, influx_user, influx_password, database=db_name)
 
 
 def create_project_databases(project_id):
